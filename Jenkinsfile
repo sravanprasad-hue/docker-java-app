@@ -4,7 +4,7 @@ pipeline {
     environment {
         AWS_REGION = 'us-east-1'
         ECR_REGISTRY = '226123187183.dkr.ecr.us-east-1.amazonaws.com'
-        ECR_REPOSITORY = 'docker-instructions'
+        ECR_REPOSITORY = 'docker-java-app'
         IMAGE_NAME = 'docker-java-app'
         IMAGE_TAG = '1.0'
     }
@@ -79,18 +79,7 @@ pipeline {
                 '''
             }
         }
-    }
 
-    post {
-        success {
-            echo 'Docker image successfully built and pushed to Amazon ECR!'
-        }
-
-        failure {
-            echo 'Pipeline failed. Check the failed stage in Jenkins.'
-        }
-    }
-}
         stage('Deploy Container') {
             steps {
                 sh '''
@@ -109,9 +98,23 @@ pipeline {
                     echo "Checking running container..."
                     docker ps
 
+                    echo "Waiting for application..."
+                    sleep 10
+
                     echo "Testing application..."
-                    sleep 5
-                    curl -f http://localhost:8080 || exit 1
+                    curl -f http://localhost:8080
                 '''
             }
         }
+    }
+
+    post {
+        success {
+            echo 'Docker image successfully built, pushed to ECR, and deployed!'
+        }
+
+        failure {
+            echo 'Pipeline failed. Check the failed stage in Jenkins.'
+        }
+    }
+}
