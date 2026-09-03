@@ -6,7 +6,7 @@ pipeline {
         ECR_REGISTRY = '226123187183.dkr.ecr.us-east-1.amazonaws.com'
         ECR_REPOSITORY = 'docker-java-app'
         IMAGE_NAME = 'docker-java-app'
-        IMAGE_TAG = '1.0'
+        IMAGE_TAG = '2.0'
     }
 
     stages {
