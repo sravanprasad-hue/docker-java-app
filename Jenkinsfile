@@ -91,3 +91,27 @@ pipeline {
         }
     }
 }
+        stage('Deploy Container') {
+            steps {
+                sh '''
+                    echo "Stopping existing container if present..."
+                    docker rm -f docker-java-app-container || true
+
+                    echo "Pulling image from ECR..."
+                    docker pull ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+
+                    echo "Starting new container..."
+                    docker run -d \
+                      --name docker-java-app-container \
+                      -p 8080:8080 \
+                      ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+
+                    echo "Checking running container..."
+                    docker ps
+
+                    echo "Testing application..."
+                    sleep 5
+                    curl -f http://localhost:8080 || exit 1
+                '''
+            }
+        }
